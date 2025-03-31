@@ -222,15 +222,14 @@ namespace ConfigEditor
 				//Sheet -> Xml Write
 				string sConfigPath = m_configurator.sConfigPath;
 				string sXPath = string.Format("{0}\\{1}\\{2}", sConfigPath, m_configurator.sProject, m_configurator.sLine);
-				string sXFilePath = string.Format("{0}\\{1}", sXPath, "TestXml.xml");
-
+				string sXFilePath = string.Format("{0}\\{1}", sXPath, "02_Utility.xml");
 				int iBackup = 1;
 
 				if (File.Exists(sXFilePath))
 				{
 					do
 					{
-						sXFilePath = string.Format("{0}\\{1}{2}.xml", sXPath, "TestXml_backup", iBackup++.ToString());
+						sXFilePath = string.Format("{0}\\{1}{2}.xml", sXPath, "02_Utility", iBackup++.ToString());
 
 					} while (File.Exists(sXFilePath));
 
@@ -251,8 +250,14 @@ namespace ConfigEditor
 				xmlwriter.WriteWhitespace("\n");
 				xmlwriter.WriteStartElement("UtilityEntries");
 
+				string slocalCurrent = "";
 				for (int i = 0; i < m_spreadUtility.RowCount; i++)
 				{
+					if (!slocalCurrent.Equals(m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL)))
+					{
+						slocalCurrent = m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL);
+						xmlwriter.WriteWhitespace("\n\n");
+					}
 					xmlwriter.WriteWhitespace("\n\t");
 
 					xmlwriter.WriteStartElement("Utility");

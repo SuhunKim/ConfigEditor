@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -77,22 +78,23 @@ namespace Kornic.BlockControlFoundation
 			CreateDataThread();
 
 			m_plcDriver = new PlcDriver();
-			m_plcDriver.Connected += OnPlcDriverConnected;
-			m_plcDriver.Disconnected += OnPlcDriverDisconnected;
-			m_plcDriver.DataExchangeReport += OnPlcDriverDataExchangeReport;
-			m_plcDriver.ConfigurationChanged += OnPlcDriverConfigurationChanged;
+			//m_plcDriver.Connected += OnPlcDriverConnected;
+			//m_plcDriver.Disconnected += OnPlcDriverDisconnected;
+			//m_plcDriver.DataExchangeReport += OnPlcDriverDataExchangeReport;
+			//m_plcDriver.ConfigurationChanged += OnPlcDriverConfigurationChanged;
 		}
 		/// <summary>
 		/// 
 		/// </summary>
-		public void Initialize(string sConfigFile)
+		public void Initialize(string sConfigFile, int iPort, int iSize, string sNoEvent)
 		{
-			if (m_plcDriver.IsRunning)
-			{
-				Stop();
-			}
+			//if (m_plcDriver.IsRunning)
+			//{
+			//	Stop();
+			//}
 
-			m_plcDriver.ConfigurationFolder = sConfigFile;
+			//m_plcDriver.ConfigurationFolder = sConfigFile;
+			m_plcDriver.ConfigurationFolder = Path.GetFullPath(string.Format(sConfigFile, iPort));
 
 			Start();
 		}

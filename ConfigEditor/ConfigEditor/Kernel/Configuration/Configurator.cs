@@ -73,12 +73,15 @@ namespace Kornic.BlockControlFoundation
 		/// <summary>
 		/// 
 		/// </summary>
+		private string m_sDataStructPath;
+		/// <summary>
+		/// 
+		/// </summary>
 		private string m_sLocalPath;
 		/// <summary>
 		/// 
 		/// </summary>
 		private string m_sLogPath;
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -103,6 +106,18 @@ namespace Kornic.BlockControlFoundation
 		/// 
 		/// </summary>
 		private int m_iLoginTime;
+		/// <summary>
+		/// 
+		/// </summary>
+		private int m_iPlcDriverPort;
+		/// <summary>
+		/// 
+		/// </summary>
+		private int m_iPlcDriverSize;
+		/// <summary>
+		/// 
+		/// </summary>
+		private string m_sPlcNoEventIndex;
 		#endregion
 
 		#region Class properties
@@ -231,6 +246,9 @@ namespace Kornic.BlockControlFoundation
 			m_svidManager = new SvidManager(this);
 			bool bSuccess = m_svidManager.Initialize(m_sUtilityPath);
 
+			m_plcManager = new PLCManager(this);
+			m_plcManager.Initialize(m_sDataStructPath, m_iPlcDriverPort, m_iPlcDriverSize, m_sPlcNoEventIndex);
+
 			return bSuccess;
 		}
 		#endregion
@@ -277,6 +295,13 @@ namespace Kornic.BlockControlFoundation
 		{
 			string sXPath = string.Format("//{0}/Utility", DEF_TOP_ELEMENT);
 			ReadManagerElement(doc, sXPath, ref m_sUtilityPath);
+
+			 sXPath = string.Format("//{0}/PlcDriver", DEF_TOP_ELEMENT);
+			ReadManagerElement(doc, sXPath, ref m_sDataStructPath);
+
+			m_iPlcDriverPort = Common.ReadAttributeAsInt(doc.SelectSingleNode(sXPath), "port");
+			m_iPlcDriverSize = Common.ReadAttributeAsInt(doc.SelectSingleNode(sXPath), "size");
+			m_sPlcNoEventIndex = Common.ReadAttribute(doc.SelectSingleNode(sXPath), "noevent");
 		}
 		/// <summary>
 		/// 
