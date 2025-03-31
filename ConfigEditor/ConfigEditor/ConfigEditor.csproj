@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B12085B3-0DC5-458C-9A7F-DE9A0E1E9556}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ConfigEditor</RootNamespace>
+    <AssemblyName>ConfigEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\_bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="APS.ICON">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.ICON.dll</HintPath>
+    </Reference>
+    <Reference Include="APS.WPF.4">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.WPF.4.dll</HintPath>
+    </Reference>
+    <Reference Include="APS.WPF.CHART">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.WPF.CHART.dll</HintPath>
+    </Reference>
+    <Reference Include="APS.WPF.MOR">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.WPF.MOR.dll</HintPath>
+    </Reference>
+    <Reference Include="APS.WPF.SHEET">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.WPF.SHEET.dll</HintPath>
+    </Reference>
+    <Reference Include="APS.WPF.SUB">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\APS.WPF.SUB.dll</HintPath>
+    </Reference>
+    <Reference Include="CustomMarshalers" />
+    <Reference Include="JMKIM.LogManager">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\JMKIM.LogManager.dll</HintPath>
+    </Reference>
+    <Reference Include="JMKIM.XmlControl">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\JMKIM.XmlControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.8.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-Windows10-APICodePack-Core.1.1.8\lib\net472\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.8.0, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-Windows10-APICodePack-Shell.1.1.8\lib\net472\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="PlcDriver.3.51">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\PlcDriver.3.51.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="unvell.ReoGrid">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\unvell.ReoGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="unvell.ReoGrid.resources">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\it\unvell.ReoGrid.resources.dll</HintPath>
+    </Reference>
+    <Reference Include="unvell.ReoScript">
+      <HintPath>..\..\..\..\..\_Project\2. 해외\05. BOE 16 Assist\BOE.B16.CIM\_bin\unvell.ReoScript.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Kernel\Configuration\Manager\SvidManager\00_SvidManager.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Kernel\Configuration\Manager\SvidManager\02_clSVID.cs" />
+    <Compile Include="_Util\enum.cs" />
+    <Compile Include="_Util\Common.cs" />
+    <Compile Include="Kernel\Configuration\Configurator.cs" />
+    <Compile Include="_Util\CrossThread.cs" />
+    <Compile Include="_Util\INI.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Kernel\Configuration\Manager\PLCManager.cs" />
+    <Compile Include="_Util\PlcName.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
