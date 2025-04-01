@@ -4,32 +4,42 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:ConfigEditor"
+        xmlns:Icon ="clr-namespace:APS.ICON;assembly=APS.ICON"
 		xmlns:SHEET="clr-namespace:APS.WPF.SHEET;assembly=APS.WPF.SHEET" x:Class="ConfigEditor.MainWindow"
 		mc:Ignorable="d"
 		Title="MainWindow" Height="950" Width="1200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None" MouseDown="UIWindowMouseDown" Background="#FF2C4169" KeyDown="OnKeyDown">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="35"></RowDefinition>
-			<RowDefinition Height="1*"></RowDefinition>
-			<RowDefinition Height="35"></RowDefinition>
-		</Grid.RowDefinitions>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="35"></RowDefinition>
+        </Grid.RowDefinitions>
 
-		<Grid Grid.Row="0" KeyDown="OnKeyDown">
-			<ToolBar    ClipToBounds="False" Margin="5" Padding="0" Width="300" HorizontalAlignment="Left">
-				<Button Content="select"	Margin="10,0,10,0"	Click="OnSelectClick"	ToolTip="Select Project Config" />
-                <Button Content="Edit"		Margin="10,0,10,0"							ToolTip="Edit List Config"  />
-                <Button Content="Save"		Margin="10,0,10,0"	Click="OnSaveClick"		ToolTip="Save List Config"  />
-                <Button Content="Run NotePad"		Margin="10,0,10,0"	Click="OnNotePadClick"		ToolTip="Save List Config"  />
+        <Grid Grid.Row="0" KeyDown="OnKeyDown">
+            <ToolBar    ClipToBounds="False" Margin="5" Padding="0" Width="400" HorizontalAlignment="Left">
+                <Button x:Name="m_btnSelect" Content="Select"	Margin="10,0,10,0"	Click="OnSelectClick"	ToolTip="Select Project Config" />
+                <Separator />
+                <Menu x:Name="m_menuEdit" Background="Transparent" >
+                    <MenuItem	Header="Edit" ToolTip="Edit List" Margin="10,0,10,0">
+                        <MenuItem	Header="Add Row" Click="OnAddRow"/>
+                        <MenuItem	Header="Insert Row" Click="OnInsertRow"/>
+                        <MenuItem	Header="Delete Row" Click="OnDeleteRow" />
+                    </MenuItem>
+                </Menu>
+                <Separator />
+                <Button x:Name="m_btnSave" Content="Save"		Margin="10,0,10,0"	Click="OnSaveClick"		ToolTip="Save List Config"  />
+                <Separator />
+                <!--<Button Content="Run NotePad"		Margin="10,0,10,0"	Click="OnNotePadClick"		ToolTip="Save List Config"  />-->
             </ToolBar>
 
-		</Grid>
-		<Grid Grid.Row="1">
-			<SHEET:APSSheet  x:Name="m_spreadUtility" ColumnCount="10" SpreadZoomUse="False" SpreadVerScollUse="True" SpreadScrollUse="True" SpreadHorScrollUse="True" _Header="GOLDEN" _Style="CIM_GRAY" 
+        </Grid>
+        <Grid Grid.Row="1">
+            <SHEET:APSSheet  x:Name="m_spreadUtility" ColumnCount="10" SpreadZoomUse="False" SpreadVerScollUse="True" SpreadScrollUse="True" SpreadHorScrollUse="True" _Header="GRAY" _Style="CIM_GRAY" 
 							 ColumnHeader_0="SVID" ColumnHeader_1="Name" ColumnHeader_2="Format" ColumnHeader_3="Type" ColumnHeader_4="Unit" ColumnHeader_5="Range" ColumnHeader_6="Dot" ColumnHeader_7="Signed" ColumnHeader_8="Local" ColumnHeader_9="Button" 
 							 ColumnWidth_1="280" ColumnWidth_5="140" SelectionMode="Cell"
 							 />
-		</Grid>
+        </Grid>
 
-			
-	</Grid>
+
+    </Grid>
 </Window>

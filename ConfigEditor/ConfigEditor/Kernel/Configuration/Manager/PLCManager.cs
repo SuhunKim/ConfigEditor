@@ -1,6 +1,4 @@
 ﻿using Kornic.BlockControlFoundation.Drivers.Plc;
-
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,7 +94,7 @@ namespace Kornic.BlockControlFoundation
 			//m_plcDriver.ConfigurationFolder = sConfigFile;
 			m_plcDriver.ConfigurationFolder = Path.GetFullPath(string.Format(sConfigFile, iPort));
 
-			Start();
+			//Start();
 		}
 		#endregion
 
@@ -108,12 +106,12 @@ namespace Kornic.BlockControlFoundation
 		{
 			try
 			{
-				m_queuePlcBunchData = new Queue<PlcDataExchangeEventArgs>();
-				ThreadStart ts = new ThreadStart(OnPlcMessageProcessorThread);
-				m_threadPlcData = new Thread(ts);
-				m_threadPlcData.IsBackground = true;
+				//m_queuePlcBunchData = new Queue<PlcDataExchangeEventArgs>();
+				//ThreadStart ts = new ThreadStart(OnPlcMessageProcessorThread);
+				//m_threadPlcData = new Thread(ts);
+				//m_threadPlcData.IsBackground = true;
 
-				m_threadPlcData.Start();
+				//m_threadPlcData.Start();
 			}
 			catch { }
 		}
@@ -122,112 +120,112 @@ namespace Kornic.BlockControlFoundation
 		#region Class public methods
 		/// <summary>
 		/// 
-		/// </summary>
-		public void Start()
-		{
-			m_plcDriver.Start();
-		}
+		///// </summary>
+		//public void Start()
+		//{
+		//	m_plcDriver.Start();
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void Stop()
+		//{
+		//	m_plcDriver.Stop();
+		//}
 		/// <summary>
 		/// 
-		/// </summary>
-		public void Stop()
-		{
-			m_plcDriver.Stop();
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Write(PlcObject plcObject)
-		{
-			try
-			{
-				m_plcDriver.Write(plcObject);
-			}
-			catch { }
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void Write(PlcObject[] plcObject)
-		{
-			try
-			{
-				m_plcDriver.Write(plcObject);
-			}
-			catch { }
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void WriteBit(int iLocal, string sName, bool bValue)
-		{
-			WriteBit(string.Format("L{0}_{1}", iLocal, sName), bValue);
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void WriteBit(string sId, bool bValue)
-		{
-			PlcBit bit = GetLocalObject(sId) as PlcBit;
-			bit.Value = bValue;
-			Write(bit);
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void WriteWord(int iLocal, string sName, object oValue)
-		{
-			WriteWord(string.Format("L{0}_{1}", iLocal, sName), oValue);
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		public void WriteWord(string sId, object oValue)
-		{
-			PlcWord word = GetLocalObject(sId) as PlcWord;
+		///// </summary>
+		//public void Write(PlcObject plcObject)
+		//{
+		//	try
+		//	{
+		//		m_plcDriver.Write(plcObject);
+		//	}
+		//	catch { }
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void Write(PlcObject[] plcObject)
+		//{
+		//	try
+		//	{
+		//		m_plcDriver.Write(plcObject);
+		//	}
+		//	catch { }
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void WriteBit(int iLocal, string sName, bool bValue)
+		//{
+		//	WriteBit(string.Format("L{0}_{1}", iLocal, sName), bValue);
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void WriteBit(string sId, bool bValue)
+		//{
+		//	PlcBit bit = GetLocalObject(sId) as PlcBit;
+		//	bit.Value = bValue;
+		//	Write(bit);
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void WriteWord(int iLocal, string sName, object oValue)
+		//{
+		//	WriteWord(string.Format("L{0}_{1}", iLocal, sName), oValue);
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//public void WriteWord(string sId, object oValue)
+		//{
+		//	PlcWord word = GetLocalObject(sId) as PlcWord;
 
-			if (sId.Contains("BCD"))
-			{
-				oValue = GetBcdDateTime(oValue);
-			}
+		//	if (sId.Contains("BCD"))
+		//	{
+		//		oValue = GetBcdDateTime(oValue);
+		//	}
 
-			word.Value = oValue;
-			Write(word);
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		private int GetBcdDateTime(object oDateTime)
-		{
-			try
-			{
-				string sDateTime = oDateTime.ToString();
+		//	word.Value = oValue;
+		//	Write(word);
+		//}
+		///// <summary>
+		///// 
+		///// </summary>
+		//private int GetBcdDateTime(object oDateTime)
+		//{
+		//	try
+		//	{
+		//		string sDateTime = oDateTime.ToString();
 
-				int iBCDData = 0;
+		//		int iBCDData = 0;
 
-				if (sDateTime.Length % 2 == 0)
-				{
-					int iCount = sDateTime.Length / 2;
+		//		if (sDateTime.Length % 2 == 0)
+		//		{
+		//			int iCount = sDateTime.Length / 2;
 
-					for (int i = 0; i < iCount; i++)
-					{
-						int iData = Convert.ToInt32(sDateTime.Substring(i * 2, 2), 16);
+		//			for (int i = 0; i < iCount; i++)
+		//			{
+		//				int iData = Convert.ToInt32(sDateTime.Substring(i * 2, 2), 16);
 
-						iBCDData += iData << (8 * i);
-					}
-				}
-				else
-				{
-					iBCDData = Convert.ToInt32(sDateTime);
-				}
+		//				iBCDData += iData << (8 * i);
+		//			}
+		//		}
+		//		else
+		//		{
+		//			iBCDData = Convert.ToInt32(sDateTime);
+		//		}
 
-				return iBCDData;
-			}
-			catch
-			{
-				return 0;
-			}
-		}
+		//		return iBCDData;
+		//	}
+		//	catch
+		//	{
+		//		return 0;
+		//	}
+		//}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -270,34 +268,34 @@ namespace Kornic.BlockControlFoundation
 		/// <summary>
 		/// 
 		/// </summary>
-		public void WritePlcWordIndexIncrease(string sId)
-		{
-			try
-			{
-				PlcWord plcWord = GetLocalObject(sId) as PlcWord;
+		//public void WritePlcWordIndexIncrease(string sId)
+		//{
+		//	try
+		//	{
+		//		PlcWord plcWord = GetLocalObject(sId) as PlcWord;
 
 
-				if ((plcWord is PlcWord))
-				{
-					m_plcDriver.Read(plcWord, (ea) =>
-					{
-						if (m_plcDriver == null || ea.Objects == null)
-							return;
-	
-						var res = ea.Objects.First() as PlcWord;
-						int iValue = !string.IsNullOrEmpty(res.Value.ToString()) ? Convert.ToInt32(res.Value) : 0;
-						iValue = iValue >= 32767 ? 0 : iValue;
-	
-						res.Value = (object)++iValue;
-						m_plcDriver.Write(res);
-					});
-				}
-			}
-			catch (Exception ex)
-			{
+		//		if ((plcWord is PlcWord))
+		//		{
+		//			m_plcDriver.Read(plcWord, (ea) =>
+		//			{
+		//				if (m_plcDriver == null || ea.Objects == null)
+		//					return;
 
-			}
-		}
+		//				var res = ea.Objects.First() as PlcWord;
+		//				int iValue = !string.IsNullOrEmpty(res.Value.ToString()) ? Convert.ToInt32(res.Value) : 0;
+		//				iValue = iValue >= 32767 ? 0 : iValue;
+
+		//				res.Value = (object)++iValue;
+		//				m_plcDriver.Write(res);
+		//			});
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+
+		//	}
+		//}
 		/// <summary>
 		/// 
 		/// </summary>
@@ -318,209 +316,209 @@ namespace Kornic.BlockControlFoundation
 		/// <summary>
 		/// 
 		/// </summary>
-		public string PlcWordStructChecked(string sId)
-		{
-			try
-			{
-				PlcObject plcObject = this.GetLocalObject(sId);
-				PlcWordStruct plcWordstruct = null;
-				PlcWord plcWord = null;
+		//public string PlcWordStructChecked(string sId)
+		//{
+		//	try
+		//	{
+		//		PlcObject plcObject = this.GetLocalObject(sId);
+		//		PlcWordStruct plcWordstruct = null;
+		//		PlcWord plcWord = null;
 
-				StringBuilder sb = new StringBuilder();
+		//		StringBuilder sb = new StringBuilder();
 
-				if (plcObject is PlcWordStruct)
-				{
-					m_plcDriver.Read(plcObject, (ea) =>
-					{
-						if (m_plcDriver == null || ea.Objects == null)
-							return;
-						plcWordstruct = ea.Objects.FirstOrDefault() as PlcWordStruct;
-					});
-				}
+		//		if (plcObject is PlcWordStruct)
+		//		{
+		//			m_plcDriver.Read(plcObject, (ea) =>
+		//			{
+		//				if (m_plcDriver == null || ea.Objects == null)
+		//					return;
+		//				plcWordstruct = ea.Objects.FirstOrDefault() as PlcWordStruct;
+		//			});
+		//		}
 
-				else if (plcObject is PlcWord)
-				{
-					m_plcDriver.Read(plcObject, (ea) =>
-					{
-						if (m_plcDriver == null || ea.Objects == null)
-							return;
-						plcWord = ea.Objects.FirstOrDefault() as PlcWord;
-					});
+		//		else if (plcObject is PlcWord)
+		//		{
+		//			m_plcDriver.Read(plcObject, (ea) =>
+		//			{
+		//				if (m_plcDriver == null || ea.Objects == null)
+		//					return;
+		//				plcWord = ea.Objects.FirstOrDefault() as PlcWord;
+		//			});
 
 
-				}
+		//		}
 
-				Thread.Sleep(1);
-				if (plcWordstruct != null)
-				{
+		//		Thread.Sleep(1);
+		//		if (plcWordstruct != null)
+		//		{
 
-					foreach (var item in plcWordstruct.SubObjects)
-					{
-						string address = item.Device == PlcDeviceCode.W || item.Device == PlcDeviceCode.W ?
-							item.Device + item.Address.ToString("X4") : item.Device + item.Address.ToString("D4");
-						string sValue = item.Value.ToString().Trim('\0');
-						sValue = string.IsNullOrEmpty(sValue) ? "" : sValue;
+		//			foreach (var item in plcWordstruct.SubObjects)
+		//			{
+		//				string address = item.Device == PlcDeviceCode.W || item.Device == PlcDeviceCode.W ?
+		//					item.Device + item.Address.ToString("X4") : item.Device + item.Address.ToString("D4");
+		//				string sValue = item.Value.ToString().Trim('\0');
+		//				sValue = string.IsNullOrEmpty(sValue) ? "" : sValue;
 
-						sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\r", item.Id.ToString(), address, item.Type.ToString(), item.Size.ToString(), sValue));
+		//				sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\r", item.Id.ToString(), address, item.Type.ToString(), item.Size.ToString(), sValue));
 
-					}
-				}
+		//			}
+		//		}
 
-				if (plcWord != null)
-				{
-					string address = plcWord.Device == PlcDeviceCode.W || plcWord.Device == PlcDeviceCode.W ?
-							plcWord.Device + plcWord.Address.ToString("X4") : plcWord.Device + plcWord.Address.ToString("D4");
-					string sValue = plcWord.Value.ToString().Trim('\0');
-					sValue = string.IsNullOrEmpty(sValue) ? "" : sValue;
+		//		if (plcWord != null)
+		//		{
+		//			string address = plcWord.Device == PlcDeviceCode.W || plcWord.Device == PlcDeviceCode.W ?
+		//					plcWord.Device + plcWord.Address.ToString("X4") : plcWord.Device + plcWord.Address.ToString("D4");
+		//			string sValue = plcWord.Value.ToString().Trim('\0');
+		//			sValue = string.IsNullOrEmpty(sValue) ? "" : sValue;
 
-					sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\r", plcWord.Id.ToString(), address, plcWord.Type.ToString(), plcWord.Size.ToString(), sValue));
+		//			sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\r", plcWord.Id.ToString(), address, plcWord.Type.ToString(), plcWord.Size.ToString(), sValue));
 
-				}
+		//		}
 
-				return sb.ToString();
-			}
-			catch (System.Exception ex)
-			{
-				//LogManager.ErrorWriteLog(ex.ToString());
+		//		return sb.ToString();
+		//	}
+		//	catch (System.Exception ex)
+		//	{
+		//		//LogManager.ErrorWriteLog(ex.ToString());
 
-				return string.Empty;
-			}
-		}
+		//		return string.Empty;
+		//	}
+		//}
 		#endregion
 
 		#region Class event handler
-		private void OnPlcDriverConnected(object sender, PlcEndPointEventArgs ea)
-		{
-			try
-			{
-				if (PlcConnected != null)
-					PlcConnected(true);
+		//private void OnPlcDriverConnected(object sender, PlcEndPointEventArgs ea)
+		//{
+		//	try
+		//	{
+		//		if (PlcConnected != null)
+		//			PlcConnected(true);
 
-				m_bConnected = true;
-			}
-			catch { }
-		}
-		private void OnPlcDriverDisconnected(object sender, PlcEndPointEventArgs ea)
-		{
-			try
-			{
-				if (PlcConnected != null)
-					PlcConnected(false);
+		//		m_bConnected = true;
+		//	}
+		//	catch { }
+		//}
+		//private void OnPlcDriverDisconnected(object sender, PlcEndPointEventArgs ea)
+		//{
+		//	try
+		//	{
+		//		if (PlcConnected != null)
+		//			PlcConnected(false);
 
-				m_bConnected = false;
-			}
-			catch { }
-		}
-		private void OnPlcDriverDataExchangeReport(object sender, PlcDataExchangeEventArgs ea)
-		{
-			try
-			{
-				lock (m_syncPlcObject)
-				{
-					switch (ea.Type)
-					{
-						case PlcDataExchangeType.BatchRead:
-						case PlcDataExchangeType.MultiBlockBatchRead:
-						case PlcDataExchangeType.RandomRead:
-							m_queuePlcBunchData.Enqueue(ea);
-							break;
+		//		m_bConnected = false;
+		//	}
+		//	catch { }
+		//}
+		//private void OnPlcDriverDataExchangeReport(object sender, PlcDataExchangeEventArgs ea)
+		//{
+		//	try
+		//	{
+		//		lock (m_syncPlcObject)
+		//		{
+		//			switch (ea.Type)
+		//			{
+		//				case PlcDataExchangeType.BatchRead:
+		//				case PlcDataExchangeType.MultiBlockBatchRead:
+		//				case PlcDataExchangeType.RandomRead:
+		//					m_queuePlcBunchData.Enqueue(ea);
+		//					break;
 
-						default:
-							return;
-					}
+		//				default:
+		//					return;
+		//			}
 
-					Monitor.Pulse(m_syncPlcObject);
-				}
-			}
-			catch { }
-		}
-		private void OnPlcMessageProcessorThread()
-		{
-			while (true)
-			{
-				PlcDataExchangeEventArgs args = new PlcDataExchangeEventArgs();
-				int iCount = 0;
+		//			Monitor.Pulse(m_syncPlcObject);
+		//		}
+		//	}
+		//	catch { }
+		//}
+		//private void OnPlcMessageProcessorThread()
+		//{
+		//	while (true)
+		//	{
+		//		PlcDataExchangeEventArgs args = new PlcDataExchangeEventArgs();
+		//		int iCount = 0;
 
-				try
-				{
-					lock (m_syncPlcObject)
-					{
-						if (m_queuePlcBunchData.Count > 0)
-						{
-							args = m_queuePlcBunchData.Dequeue();
-							iCount = m_queuePlcBunchData.Count;
-						}
-						else
-						{
-							Monitor.Wait(m_syncPlcObject);
-						}
-					}
+		//		try
+		//		{
+		//			lock (m_syncPlcObject)
+		//			{
+		//				if (m_queuePlcBunchData.Count > 0)
+		//				{
+		//					args = m_queuePlcBunchData.Dequeue();
+		//					iCount = m_queuePlcBunchData.Count;
+		//				}
+		//				else
+		//				{
+		//					Monitor.Wait(m_syncPlcObject);
+		//				}
+		//			}
 
-					if (args.Objects != null) OnPlcDataChanged(args);
-				}
-				catch { }
-			}
-		}
-		private void OnPlcDriverConfigurationChanged(object sender, PlcConfigurationChangedEventArgs e)
-		{
-			try
-			{
-				if (e.ConfigurationErrorCode != PlcErrorCode.None)
-				{
-					string sException = e.ConfigurationError.ToString();
-				}
+		//			if (args.Objects != null) OnPlcDataChanged(args);
+		//		}
+		//		catch { }
+		//	}
+		//}
+		//private void OnPlcDriverConfigurationChanged(object sender, PlcConfigurationChangedEventArgs e)
+		//{
+		//	try
+		//	{
+		//		if (e.ConfigurationErrorCode != PlcErrorCode.None)
+		//		{
+		//			string sException = e.ConfigurationError.ToString();
+		//		}
 
-				if (PlcConfigrationChanged != null)
-				{
-					m_hashPlcCurrentValue.Clear();
+		//		if (PlcConfigrationChanged != null)
+		//		{
+		//			m_hashPlcCurrentValue.Clear();
 
-					PlcConfigrationChanged(sender, e);
-				}
-			}
-			catch { }
-		}
-		private void OnPlcDataChanged(PlcDataExchangeEventArgs ea)
-		{
-			foreach (PlcObject plcobject in ea.Objects)
-			{
-				switch (plcobject.Type)
-				{
-					case PlcDataType.Bool:
-						PlcBit plcbit = (PlcBit)plcobject;
-						m_hashPlcCurrentValue[plcbit.Id] = new string[] { plcbit.Value.ToString() == "True" ? "1" : "0" };
-						break;
+		//			PlcConfigrationChanged(sender, e);
+		//		}
+		//	}
+		//	catch { }
+		//}
+		//private void OnPlcDataChanged(PlcDataExchangeEventArgs ea)
+		//{
+		//	foreach (PlcObject plcobject in ea.Objects)
+		//	{
+		//		switch (plcobject.Type)
+		//		{
+		//			case PlcDataType.Bool:
+		//				PlcBit plcbit = (PlcBit)plcobject;
+		//				m_hashPlcCurrentValue[plcbit.Id] = new string[] { plcbit.Value.ToString() == "True" ? "1" : "0" };
+		//				break;
 
-					case PlcDataType.WordStruct:
-						PlcWordStruct plcwordstruct = (PlcWordStruct)plcobject;
-						string[] sArrValue = new string[GetPlcStructLength(plcwordstruct.Id) + 1];
+		//			case PlcDataType.WordStruct:
+		//				PlcWordStruct plcwordstruct = (PlcWordStruct)plcobject;
+		//				string[] sArrValue = new string[GetPlcStructLength(plcwordstruct.Id) + 1];
 
-						for (int i = 0, iLength = 0; i < plcwordstruct.Count; i++)
-						{
-							iLength++;
-							sArrValue[iLength] = plcwordstruct[i].Value.ToString();
+		//				for (int i = 0, iLength = 0; i < plcwordstruct.Count; i++)
+		//				{
+		//					iLength++;
+		//					sArrValue[iLength] = plcwordstruct[i].Value.ToString();
 
-							foreach (PlcWordPart plcwordpart in plcwordstruct[i].Parts)
-							{
-								iLength++;
-								sArrValue[iLength] = plcwordpart.Value.ToString();
-							}
-						}
+		//					foreach (PlcWordPart plcwordpart in plcwordstruct[i].Parts)
+		//					{
+		//						iLength++;
+		//						sArrValue[iLength] = plcwordpart.Value.ToString();
+		//					}
+		//				}
 
-						m_hashPlcCurrentValue[plcwordstruct.Id] = sArrValue;
-						break;
+		//				m_hashPlcCurrentValue[plcwordstruct.Id] = sArrValue;
+		//				break;
 
-					case PlcDataType.Transaction:
-						break;
+		//			case PlcDataType.Transaction:
+		//				break;
 
-					default:
-						PlcWord plcword = (PlcWord)plcobject;
-						m_hashPlcCurrentValue[plcword.Id] = new string[] { plcword.Value.ToString() };
-						break;
-				}
-			}
+		//			default:
+		//				PlcWord plcword = (PlcWord)plcobject;
+		//				m_hashPlcCurrentValue[plcword.Id] = new string[] { plcword.Value.ToString() };
+		//				break;
+		//		}
+		//	}
 
-			PlcDataChanged(ea);
-		}
+		//	PlcDataChanged(ea);
+		//}
 
 		#endregion
 

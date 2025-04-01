@@ -3,7 +3,6 @@ using Kornic.BlockControlFoundation;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -105,6 +104,7 @@ namespace ConfigEditor
 			m_configurator = new Configurator(this);
 
 			Initialize_Sheet();
+			Initialize_Icon();
 			UISetSheetBorder(m_spreadUtility);
 		}
 		/// <summary>
@@ -148,9 +148,17 @@ namespace ConfigEditor
 		/// <summary>
 		/// 
 		/// </summary>
+		private void Initialize_Icon()
+		{
+			//var a = APS.ICON.APSImage.GetImageArray();
+			//m_btnSelect.Content = APS.ICON.APSImage.GetIcon_Wpf("");
+		}
+		/// <summary>
+		/// 
+		/// </summary>
 		private void UISetSheetBorder(APSSheet sheet)
 		{
-			sheet.SetBorders(0, 0, sheet.RowCount, sheet.ColumnCount, BorderPositions.InsideAll,RangeBorderStyle.SilverSolid);
+			sheet.SetBorders(0, 0, sheet.RowCount, sheet.ColumnCount, BorderPositions.InsideAll, RangeBorderStyle.SilverSolid);
 		}
 		#endregion
 
@@ -239,6 +247,17 @@ namespace ConfigEditor
 
 				}
 
+				//저장 경로 설정 
+				CommonSaveFileDialog Dialog = new CommonSaveFileDialog();
+				Dialog.InitialDirectory = sXPath;
+				//Dialog.DefaultFileName = string.Format("{0}{1}.xml","02_Utility", );
+				Dialog.DefaultExtension = "xml";
+				if (Dialog.ShowDialog() == CommonFileDialogResult.Ok)
+				{
+
+				}
+
+
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = "\t";
@@ -271,7 +290,7 @@ namespace ConfigEditor
 					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_SIGNED, m_spreadUtility.GetText(i, DEF_COLUMN_SIGN));
 					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_LOCAL, m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL));
 
-					xmlwriter.WriteEndElement(); 
+					xmlwriter.WriteEndElement();
 				}
 
 				xmlwriter.WriteEndDocument();
@@ -285,6 +304,54 @@ namespace ConfigEditor
 				return;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
+			{
+				OnSelectClick(null, null);
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnAddRow(object sender, RoutedEventArgs e)
+		{
+			if (m_spreadUtility.RowCount > 20000)
+			{
+				return;
+			}
+
+			m_spreadUtility.RowCount += 1;
+			//CrossThread.SheetRowCountCrossThread(m_spreadUtility, m_spreadUtility.RowCount + 1);
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnInsertRow(object sender, RoutedEventArgs e)
+		{
+			if (m_spreadUtility.RowCount > 20000)
+			{
+				return;
+			}
+
+			int iRow = m_spreadUtility.CurrentWorksheet.FocusPos.Row;
+			m_spreadUtility.CurrentWorksheet.InsertRows(iRow, 1);
+
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnDeleteRow(object sender, RoutedEventArgs e)
+		{
+			int iRow = m_spreadUtility.CurrentWorksheet.FocusPos.Row;
+			m_spreadUtility.CurrentWorksheet.DeleteRows(iRow, 1);
+		}
+		/// <summary>
+		/// 
+		/// </summary>
 		private void OnNotePadClick(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(m_configurator.sConfigPath))
@@ -360,12 +427,5 @@ namespace ConfigEditor
 		}
 		#endregion
 
-		private void OnKeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
-			{
-				OnSelectClick(null, null);
-			}
-		}
 	}
 }
