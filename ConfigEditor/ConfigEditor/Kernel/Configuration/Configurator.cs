@@ -247,7 +247,7 @@ namespace Kornic.BlockControlFoundation
 			bool bSuccess = m_svidManager.Initialize(m_sUtilityPath);
 
 			m_plcManager = new PLCManager(this);
-			m_plcManager.Initialize(m_sDataStructPath, m_iPlcDriverPort, m_iPlcDriverSize, m_sPlcNoEventIndex);
+			bSuccess = m_plcManager.Initialize(m_sDataStructPath, m_iPlcDriverPort, m_iPlcDriverSize, m_sPlcNoEventIndex);
 
 			return bSuccess;
 		}

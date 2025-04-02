@@ -1,4 +1,5 @@
-﻿using Kornic.BlockControlFoundation.Drivers.Plc;
+﻿using JMKIM.XmlControl;
+using Kornic.BlockControlFoundation.Drivers.Plc;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,12 @@ namespace Kornic.BlockControlFoundation
 
 		private Configurator m_configurator;
 		private PlcDriver m_plcDriver;
+		/// <summary>
+		/// 
+		/// </summary>
+		private XmlDataReader m_xmlReader;
+
+
 		private object m_syncPlcObject;
 		private Thread m_threadPlcData;
 		private bool m_bConnected;
@@ -27,6 +34,7 @@ namespace Kornic.BlockControlFoundation
 		public event PlcConnectEventHandler PlcConnected;
 		public delegate void PlcConfigrationChangetEventHandler(object sender, PlcConfigurationChangedEventArgs e);
 		public event PlcConfigrationChangetEventHandler PlcConfigrationChanged;
+
 		#endregion
 
 		#region Class properties
@@ -84,17 +92,39 @@ namespace Kornic.BlockControlFoundation
 		/// <summary>
 		/// 
 		/// </summary>
-		public void Initialize(string sConfigFile, int iPort, int iSize, string sNoEvent)
+		public bool Initialize(string sConfigFile, int iPort, int iSize, string sNoEvent)
 		{
-			//if (m_plcDriver.IsRunning)
-			//{
-			//	Stop();
-			//}
+			try
+			{
+				//m_plcDriver.ConfigurationFolder = sConfigFile;
+				m_plcDriver.ConfigurationFolder = Path.GetFullPath(string.Format(sConfigFile, iPort));
 
-			//m_plcDriver.ConfigurationFolder = sConfigFile;
-			m_plcDriver.ConfigurationFolder = Path.GetFullPath(string.Format(sConfigFile, iPort));
+			m_xmlReader = new XmlDataReader(m_plcDriver.ConfigurationFolder, false);
 
-			//Start();
+				ReadXml();
+
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private void ReadXml()
+		{
+			try
+			{
+				var hashData = m_xmlReader.XmlReadDictionary(DEF_ELEMENT_NAME, Enum.GetNames(typeof(eSVID)));
+
+				ReadDataToHash(hashData);
+			}
+			catch (Exception ex)
+			{
+			}
 		}
 		#endregion
 

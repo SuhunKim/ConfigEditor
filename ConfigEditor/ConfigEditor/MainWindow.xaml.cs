@@ -30,6 +30,15 @@ namespace ConfigEditor
 		/// <summary>
 		/// 
 		/// </summary>
+		private const string DEF_FILE_UTILITY = @"02_Utility";
+		/// <summary>
+		/// 
+		/// </summary>
+		private const string DEF_FILE_DATA_STRUCT = @"Data_Struct";
+
+		/// <summary>
+		/// 
+		/// </summary>
 		private const string DEF_ATTRIBUTE_KEY = "key";
 		private const string DEF_ATTRIBUTE_NAME = "plcChannelName";
 		private const string DEF_ATTRIBUTE_FORMAT = "format";
@@ -227,36 +236,13 @@ namespace ConfigEditor
 					return;
 				}
 
-				//Sheet -> Xml Write
+
 				string sConfigPath = m_configurator.sConfigPath;
 				string sXPath = string.Format("{0}\\{1}\\{2}", sConfigPath, m_configurator.sProject, m_configurator.sLine);
-				string sXFilePath = string.Format("{0}\\{1}", sXPath, "02_Utility.xml");
-				int iBackup = 1;
+				string sUtilityPath = CreateFilePath(sXPath, DEF_FILE_UTILITY);
 
-				if (File.Exists(sXFilePath))
-				{
-					do
-					{
-						sXFilePath = string.Format("{0}\\{1}{2}.xml", sXPath, "02_Utility", iBackup++.ToString());
-
-					} while (File.Exists(sXFilePath));
-
-				}
-				else
-				{
-
-				}
-
-				//저장 경로 설정 
-				CommonSaveFileDialog Dialog = new CommonSaveFileDialog();
-				Dialog.InitialDirectory = sXPath;
-				//Dialog.DefaultFileName = string.Format("{0}{1}.xml","02_Utility", );
-				Dialog.DefaultExtension = "xml";
-				if (Dialog.ShowDialog() == CommonFileDialogResult.Ok)
-				{
-
-				}
-
+				sXPath = PLCManager.PlcDriver.ConfigurationFolder;
+				string sDataStructPath = CreateFilePath(sXPath, DEF_FILE_DATA_STRUCT);
 
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
@@ -264,7 +250,18 @@ namespace ConfigEditor
 				settings.NewLineChars = "\r\n"; // 줄 바꿈 문자 (기본값)
 				settings.NewLineOnAttributes = true;
 
-				XmlWriter xmlwriter = XmlWriter.Create(sXFilePath);
+
+				Dictionary<string, string> hashKeyToData = new Dictionary<string, string>();
+
+
+
+
+
+
+
+
+
+				XmlWriter xmlwriter = XmlWriter.Create(sUtilityPath);
 				xmlwriter.WriteStartDocument();
 				xmlwriter.WriteWhitespace("\n");
 				xmlwriter.WriteStartElement("UtilityEntries");
@@ -291,6 +288,8 @@ namespace ConfigEditor
 					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_LOCAL, m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL));
 
 					xmlwriter.WriteEndElement();
+
+
 				}
 
 				xmlwriter.WriteEndDocument();
@@ -304,6 +303,26 @@ namespace ConfigEditor
 				return;
 			}
 		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		private string CreateFilePath(string sConfigPath, string sFileName)
+		{
+			DateTime time = DateTime.Now;
+			string sDate = string.Format(@"_{0:d4}{1:d2}{2:d2}.csv", time.Year, time.Month, time.Day);
+
+			string sXFilePath = string.Format("{0}\\{1}{2}.xml", sConfigPath, sFileName, sDate);
+			int iBackup = 1;
+
+			while (File.Exists(sXFilePath))
+			{
+				sXFilePath = string.Format("{0}\\{1}_({2}).xml", sXFilePath, sFileName, iBackup++.ToString());
+			}
+
+			return sXFilePath;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
