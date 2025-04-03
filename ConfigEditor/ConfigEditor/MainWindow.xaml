@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" KeyDown="OnKeyDown">
-            <ToolBar    ClipToBounds="False" Margin="5" Padding="0" Width="400" HorizontalAlignment="Left">
+            <ToolBar     ClipToBounds="False" Margin="10,5,5,5" Padding="0" Width="400" HorizontalAlignment="Left">
                 <Button x:Name="m_btnSelect" Content="Select"	Margin="10,0,10,0"	Click="OnSelectClick"	ToolTip="Select Project Config" />
                 <Separator />
                 <Menu x:Name="m_menuEdit" Background="Transparent" >
@@ -37,7 +37,8 @@
             <SHEET:APSSheet  x:Name="m_spreadUtility" ColumnCount="10" SpreadZoomUse="False" SpreadVerScollUse="True" SpreadScrollUse="True" SpreadHorScrollUse="True" _Header="GRAY" _Style="CIM_GRAY" 
 							 ColumnHeader_0="SVID" ColumnHeader_1="Name" ColumnHeader_2="Format" ColumnHeader_3="Type" ColumnHeader_4="Unit" ColumnHeader_5="Range" ColumnHeader_6="Dot" ColumnHeader_7="Signed" ColumnHeader_8="Local" ColumnHeader_9="Button" 
 							 ColumnWidth_1="280" ColumnWidth_5="140" SelectionMode="Cell"
-							 />
+							 Margin="10"
+                             />
         </Grid>
 
 

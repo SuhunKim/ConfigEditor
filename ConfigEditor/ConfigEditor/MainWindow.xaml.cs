@@ -236,7 +236,6 @@ namespace ConfigEditor
 					return;
 				}
 
-
 				string sConfigPath = m_configurator.sConfigPath;
 				string sXPath = string.Format("{0}\\{1}\\{2}", sConfigPath, m_configurator.sProject, m_configurator.sLine);
 				string sUtilityPath = CreateFilePath(sXPath, DEF_FILE_UTILITY);
@@ -250,17 +249,39 @@ namespace ConfigEditor
 				settings.NewLineChars = "\r\n"; // 줄 바꿈 문자 (기본값)
 				settings.NewLineOnAttributes = true;
 
+				//250403  //PLC\Data_Struct\FDC_Struct 변환 코드
+				XmlDocument doc = new XmlDocument();
+				doc.Load(sDataStructPath);
+				XmlNodeList itemNodes = doc.SelectNodes("PlcStructs/Device/PlcWordStruct");
 
-				Dictionary<string, string> hashKeyToData = new Dictionary<string, string>();
+				if (itemNodes is null)
+				{
+					//DataStruct 문서잘못됨 					//ERROR 표시 필요
+				}
+
+				foreach (XmlNode Node in itemNodes)
+				{
+					if (Node.Attributes.GetNamedItem("id").Value.ToString().Contains("FDC"))
+					{
+						var temp = Node.ChildNodes;
+						Node.RemoveAll();
+
+						for (int i = 0; i < 462; i++)
+						{
+							XmlElement newChild = doc.CreateElement("id");
+
+							Node.AppendChild(newChild);
+
+						}
+					}
+				}
+				doc.Save(string.Format("{0}{1}", sDataStructPath, "Data_Struct_copy.xml"));
 
 
 
 
 
-
-
-
-
+				//Utility 작성
 				XmlWriter xmlwriter = XmlWriter.Create(sUtilityPath);
 				xmlwriter.WriteStartDocument();
 				xmlwriter.WriteWhitespace("\n");
