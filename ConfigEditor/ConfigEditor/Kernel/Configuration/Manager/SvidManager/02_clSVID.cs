@@ -23,6 +23,10 @@ namespace Kornic.BlockControlFoundation
     /// <summary>
     /// 
     /// </summary>
+    public string sId;
+    /// <summary>
+    /// 
+    /// </summary>
     public string sPLC_NAME;
     /// <summary>
     /// 
