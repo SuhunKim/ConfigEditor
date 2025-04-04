@@ -54,7 +54,7 @@ namespace ConfigEditor
 		/// <summary>
 		/// 
 		/// </summary>
-		private const string DEF_PLC_ITEM_ATTR_2 = "address";
+		private const string DEF_PLC_ITEM_ATTR_2 = "type";
 
 		/// <summary>
 		/// 
@@ -252,9 +252,12 @@ namespace ConfigEditor
 			foreach (XmlNode Node in itemNodes)
 			{
 				string snodeName = Node.Attributes.GetNamedItem("id").Value.ToString();
+
 				if (snodeName.Contains(sStructId))
 				{
-					//FDC_STRUCT / FDC_SEM_STRUCT 구분방법 적용해야함 
+					string sLocal = snodeName.Substring(snodeName.IndexOf("L") + 1, 2); //수정 필요 더  범용적인 방법
+
+					//	FDC_STRUCT / FDC_SEM_STRUCT 구분방법 적용해야함 
 					XmlAttribute idAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_1);
 					idAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value;    //"FDC".ToString();
 
@@ -269,7 +272,20 @@ namespace ConfigEditor
 
 
 					//250404 shkim 수정 예정 값 넣는 방식 주소까진 복사됨
+					foreach (var item in hashData[sLocal])
+					{
+						XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
 
+						XmlAttribute idAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_1);
+						idAttribute.Value = item.sId;
+						newChild.Attributes.Append(idAttribute);
+
+						XmlAttribute typeAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_2);
+						typeAttribute.Value = item.sFORMAT;
+						newChild.Attributes.Append(typeAttribute);
+
+						Node.AppendChild(newChild);
+					}
 					//for (int i = 0; i < 10; i++)
 					//{
 					//	XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
@@ -304,7 +320,13 @@ namespace ConfigEditor
 					continue;
 				}
 
-				int iKey = Convert.ToInt32(m_spreadUtility.GetText(i, DEF_COLUMN_KEY));
+				string sKey = m_spreadUtility.GetText(i, DEF_COLUMN_KEY);
+				if (string.IsNullOrEmpty(sKey))
+				{
+					continue;
+				}
+
+				int iKey = Convert.ToInt32(sKey);
 				if (bFDC && iKey > 60000)
 				{
 					continue;
@@ -451,8 +473,8 @@ namespace ConfigEditor
 				XmlDocument doc = new XmlDocument();
 				doc.Load(sDataStructPath);
 
-				CreateFileDataStruct(doc, hashLocalToSvid, sDataStructPath, true);
-				CreateFileDataStruct(doc, hashLocalToSEM, sDataStructPath, false);
+				CreateFileDataStruct(doc, hashLocalToSvid, sDataCopyPath, true);
+				CreateFileDataStruct(doc, hashLocalToSEM, sDataCopyPath, false);
 
 
 			}
