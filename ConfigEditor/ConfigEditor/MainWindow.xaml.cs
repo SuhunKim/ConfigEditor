@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml;
@@ -47,7 +46,7 @@ namespace ConfigEditor
 		/// <summary>
 		/// 
 		/// </summary>
-		private const string DEF_PLC_ITEM= "PlcWord";
+		private const string DEF_PLC_ITEM = "PlcWord";
 		/// <summary>
 		/// 
 		/// </summary>
@@ -193,6 +192,158 @@ namespace ConfigEditor
 		#endregion
 
 		#region Class private methods
+		/// <summary>
+		/// 
+		/// </summary>
+		private string CreateFilePath(string sConfigPath, string sFileName)
+		{
+			DateTime time = DateTime.Now;
+			string sDate = string.Format(@"_{0:d4}{1:d2}{2:d2}", time.Year, time.Month, time.Day);
+
+			string sXFilePath = string.Format("{0}\\{1}{2}.xml", sConfigPath, sFileName, sDate);
+			int iBackup = 1;
+
+			while (File.Exists(sXFilePath))
+			{
+				sXFilePath = string.Format("{0}\\{1}{2}_({3}).xml", sConfigPath, sFileName, sDate, iBackup++.ToString());
+			}
+
+			return sXFilePath;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void CreateUtility(XmlWriter xmlwriter, Dictionary<string, List<clSVID>> hashLocalToSvid)
+		{
+			foreach (var local in hashLocalToSvid)
+			{
+				foreach (var svidItem in local.Value)
+				{
+					xmlwriter.WriteWhitespace("\n\t");
+					xmlwriter.WriteStartElement("Utility");
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_KEY, svidItem.sId);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_NAME, svidItem.sPLC_NAME);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_FORMAT, svidItem.sFORMAT);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_TYPE, svidItem.sTYPE);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_UNIT, svidItem.sUNIT);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_RANGE, svidItem.sRANGE);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_DOT, svidItem.sDOT);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_SIGNED, svidItem.sSIGNED);
+					xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_LOCAL, svidItem.sLOCAL);
+					xmlwriter.WriteEndElement();
+				}
+				xmlwriter.WriteWhitespace("\n\n");
+
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private void CreateFileDataStruct(XmlDocument doc, Dictionary<string, List<clSVID>> hashData, string sDataCopyPath, bool sFDC)
+		{
+			string sStructId = sFDC ? "FDC_STRUCT" : "SEM_STRUCT";
+
+			XmlNodeList itemNodes = doc.SelectNodes("PlcStructs/Device/PlcWordStruct");
+
+			if (itemNodes is null)
+			{
+			}
+
+			foreach (XmlNode Node in itemNodes)
+			{
+				string snodeName = Node.Attributes.GetNamedItem("id").Value.ToString();
+				if (snodeName.Contains(sStructId))
+				{
+					//FDC_STRUCT / FDC_SEM_STRUCT 구분방법 적용해야함 
+					XmlAttribute idAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_1);
+					idAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value;    //"FDC".ToString();
+
+					XmlAttribute typeAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_2);
+					typeAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_2).Value;
+
+					var temp = Node.ChildNodes;
+					Node.RemoveAll();
+
+					Node.Attributes.Append(idAttributeStruct);
+					Node.Attributes.Append(typeAttributeStruct);
+
+
+					//250404 shkim 수정 예정 값 넣는 방식 주소까진 복사됨
+
+					//for (int i = 0; i < 10; i++)
+					//{
+					//	XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
+
+					//	XmlAttribute idAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_1);
+					//	idAttribute.Value = i.ToString();
+					//	newChild.Attributes.Append(idAttribute);
+
+					//	XmlAttribute typeAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_2);
+					//	typeAttribute.Value = "I4";
+					//	newChild.Attributes.Append(typeAttribute);
+
+					//	Node.AppendChild(newChild);
+					//}
+				}
+			}
+			doc.Save(sDataCopyPath);
+
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		private Dictionary<string, List<clSVID>> SetSheetToSVIDList(bool bFDC)
+		{
+			Dictionary<string, List<clSVID>> hashLocalToSvid = new Dictionary<string, List<clSVID>>();
+
+
+			for (int i = 0; i < m_spreadUtility.RowCount; i++)
+			{
+				if (m_spreadUtility.GetText(i, DEF_COLUMN_KEY) is null)
+				{
+					continue;
+				}
+
+				int iKey = Convert.ToInt32(m_spreadUtility.GetText(i, DEF_COLUMN_KEY));
+				if (bFDC && iKey > 60000)
+				{
+					continue;
+				}
+				else if (!bFDC && iKey < 60000)
+				{
+					continue;
+				}
+
+				var svid = new clSVID();
+				svid.sId = m_spreadUtility.GetText(i, DEF_COLUMN_KEY);
+				svid.sPLC_NAME = m_spreadUtility.GetText(i, DEF_COLUMN_NAME);
+				svid.sFORMAT = m_spreadUtility.GetText(i, DEF_COLUMN_FORMAT);
+				svid.sTYPE = m_spreadUtility.GetText(i, DEF_COLUMN_TYPE);
+				svid.sUNIT = m_spreadUtility.GetText(i, DEF_COLUMN_UNIT);
+				svid.sRANGE = m_spreadUtility.GetText(i, DEF_COLUMN_RANGE);
+				svid.sDOT = m_spreadUtility.GetText(i, DEF_COLUMN_DOT);
+				svid.sSIGNED = m_spreadUtility.GetText(i, DEF_COLUMN_SIGN);
+				svid.sLOCAL = m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL);
+				svid.bDOT_CUT = true;
+
+				if (bool.TryParse(m_spreadUtility.GetText(i, DEF_COLUMN_DOT), out bool bDotCut))
+				{
+					svid.bDOT_CUT = bDotCut;
+				}
+
+				//hashKeyToData[svid.sId] = svid;
+				if (hashLocalToSvid.ContainsKey(svid.sLOCAL))
+				{
+					hashLocalToSvid[svid.sLOCAL].Add(svid);
+				}
+				else
+				{
+					hashLocalToSvid.Add(svid.sLOCAL, new List<clSVID>() { svid });
+				}
+			}
+
+			return hashLocalToSvid;
+		}
 		#endregion
 
 		#region Class public methods
@@ -227,7 +378,7 @@ namespace ConfigEditor
 
 					if (!m_sNewProjectFullPath.Contains("ConfigFile"))
 					{
-						MessageBox.Show("ConfigFile을 선택해 주세요.");
+						MessageBox.Show("\"ConfigFile\" 폴더를 선택해 주세요.");
 						return;
 					}
 
@@ -237,8 +388,9 @@ namespace ConfigEditor
 					{
 						UISheetUtility();
 						m_lbProject.Content = m_configurator.sLine;
-						m_lbPath.Content = m_configurator.sConfigPath; //m_sUtilityPath
+						m_lbPath.Content = m_configurator.sUtilityPath; //m_sUtilityPath
 					}
+
 				}
 			}
 			catch (Exception)
@@ -267,73 +419,41 @@ namespace ConfigEditor
 				sXPath = PLCManager.PlcDriver.ConfigurationFolder;
 				sXPath = sXPath.EndsWith("\\") ? sXPath.Substring(0, sXPath.Length - 1) : sXPath;
 
-				// Sheet Data to SVIDList
-				Dictionary<string, List<clSVID>> hashLocalToSvid = SetSheetToSVIDList();
+				//Sheet Data to SVIDList
+				Dictionary<string, List<clSVID>> hashLocalToSvid = SetSheetToSVIDList(true);
+				Dictionary<string, List<clSVID>> hashLocalToSEM = SetSheetToSVIDList(false);
 
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = "\t";
 				settings.NewLineChars = "\r\n";
-				settings.NewLineOnAttributes = true;
+				settings.NewLineOnAttributes = false;
 
 				//Utility 작성
-				XmlWriter xmlwriter = XmlWriter.Create(sUtilityPath);
+				XmlWriter xmlwriter = XmlWriter.Create(sUtilityPath, settings);
 				xmlwriter.WriteStartDocument();
 				xmlwriter.WriteWhitespace("\n");
 				xmlwriter.WriteStartElement("UtilityEntries");
 
-				
 				//FDC
-				foreach (var local in hashLocalToSvid)
-				{
-					//var a = hashLocalToSvid.FirstOrDefault().Value.FindAll(x => Convert.ToInt32(x.sId) < 60000);
-					foreach (var svidItem in local.Value.FindAll(x => Convert.ToInt32(x.sId) < 60000))
-					{
-						xmlwriter.WriteWhitespace("\n\t");
-						xmlwriter.WriteStartElement("Utility");
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_KEY,				svidItem.sId);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_NAME,			svidItem.sPLC_NAME);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_FORMAT,		svidItem.sFORMAT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_TYPE,			svidItem.sTYPE);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_UNIT,			svidItem.sUNIT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_RANGE,			svidItem.sRANGE);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_DOT,				svidItem.sDOT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_SIGNED,		svidItem.sSIGNED);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_LOCAL,			svidItem.sLOCAL);
-						xmlwriter.WriteEndElement();
-					}
-					xmlwriter.WriteWhitespace("\n\n");
-
-				}
+				CreateUtility(xmlwriter, hashLocalToSvid);
 				//SEM
-				foreach (var local in hashLocalToSvid)
-				{
-					foreach (var SEMItem in local.Value.FindAll(x => Convert.ToInt32(x.sId) > 60000))
-					{
-						xmlwriter.WriteWhitespace("\n\t");
-						xmlwriter.WriteStartElement("Utility");
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_KEY,				SEMItem.sId);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_NAME,			SEMItem.sPLC_NAME);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_FORMAT,		SEMItem.sFORMAT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_TYPE,			SEMItem.sTYPE);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_UNIT,			SEMItem.sUNIT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_RANGE,			SEMItem.sRANGE);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_DOT,				SEMItem.sDOT);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_SIGNED,		SEMItem.sSIGNED);
-						xmlwriter.WriteAttributeString(DEF_ATTRIBUTE_LOCAL, SEMItem.sLOCAL);
-						xmlwriter.WriteEndElement();
-					}
-					xmlwriter.WriteWhitespace("\n\n");
-
-				}
+				CreateUtility(xmlwriter, hashLocalToSEM);
 
 				xmlwriter.WriteEndDocument();
 				xmlwriter.Flush();
 				xmlwriter.Close();
 
-				//250403  //PLC\Data_Struct\FDC_Struct 변환 코드
-				CreateFileDataStruct(sXPath);
-				
+				//250403 Data_Struct 변환
+				string sDataStructPath = string.Format("{0}\\{1}.xml", sXPath, DEF_FILE_DATA_STRUCT);  // CreateFilePath(sXPath, DEF_FILE_DATA_STRUCT);
+				string sDataCopyPath = CreateFilePath(sXPath, DEF_FILE_DATA_STRUCT);
+
+				XmlDocument doc = new XmlDocument();
+				doc.Load(sDataStructPath);
+
+				CreateFileDataStruct(doc, hashLocalToSvid, sDataStructPath, true);
+				CreateFileDataStruct(doc, hashLocalToSEM, sDataStructPath, false);
+
 
 			}
 			catch (Exception ex)
@@ -341,116 +461,6 @@ namespace ConfigEditor
 				MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK);
 				return;
 			}
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		private void CreateFileDataStruct(string sXPath)
-		{
-			string sDataStructPath = string.Format("{0}\\{1}.xml", sXPath, DEF_FILE_DATA_STRUCT);  // CreateFilePath(sXPath, DEF_FILE_DATA_STRUCT);
-			string sDataCopyPath = CreateFilePath(sXPath, DEF_FILE_DATA_STRUCT);
-
-			XmlDocument doc = new XmlDocument();
-			doc.Load(sDataStructPath);
-
-			XmlNodeList itemNodes = doc.SelectNodes("PlcStructs/Device/PlcWordStruct");
-
-			if (itemNodes is null)
-			{
-				//DataStruct 문서잘못됨 					//ERROR 표시 필요
-			}
-
-			foreach (XmlNode Node in itemNodes)
-			{
-				if (Node.Attributes.GetNamedItem("id").Value.ToString().Contains("FDC"))
-				{
-					XmlAttribute idAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_1);
-					idAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value;    //"FDC".ToString();
-
-					XmlAttribute typeAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_2);
-					typeAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_2).Value;
-
-					var temp = Node.ChildNodes;
-					Node.RemoveAll();
-
-					Node.Attributes.Append(idAttributeStruct);
-					Node.Attributes.Append(typeAttributeStruct);
-
-					for (int i = 0; i < 10; i++)
-					{
-						XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
-
-						XmlAttribute idAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_1);
-						idAttribute.Value = i.ToString();
-						newChild.Attributes.Append(idAttribute);
-
-						XmlAttribute typeAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_2);
-						typeAttribute.Value = "I4";
-						newChild.Attributes.Append(typeAttribute);
-
-						Node.AppendChild(newChild);
-					}
-				}
-			}
-			doc.Save(sDataCopyPath);
-
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		private Dictionary<string, List<clSVID>> SetSheetToSVIDList()
-		{
-			Dictionary<string, List<clSVID>> hashLocalToSvid = new Dictionary<string, List<clSVID>>();
-
-			for (int i = 0; i < m_spreadUtility.RowCount; i++)
-			{
-				var svid = new clSVID();
-				svid.sId = m_spreadUtility.GetText(i, DEF_COLUMN_KEY);
-				svid.sPLC_NAME = m_spreadUtility.GetText(i, DEF_COLUMN_NAME);
-				svid.sFORMAT = m_spreadUtility.GetText(i, DEF_COLUMN_FORMAT);
-				svid.sTYPE = m_spreadUtility.GetText(i, DEF_COLUMN_TYPE);
-				svid.sUNIT = m_spreadUtility.GetText(i, DEF_COLUMN_UNIT);
-				svid.sRANGE = m_spreadUtility.GetText(i, DEF_COLUMN_RANGE);
-				svid.sDOT = m_spreadUtility.GetText(i, DEF_COLUMN_DOT);
-				svid.sSIGNED = m_spreadUtility.GetText(i, DEF_COLUMN_SIGN);
-				svid.sLOCAL = m_spreadUtility.GetText(i, DEF_COLUMN_LOCAL);
-				svid.bDOT_CUT = true;
-
-				if (bool.TryParse(m_spreadUtility.GetText(i, DEF_COLUMN_DOT), out bool bDotCut))
-				{
-					svid.bDOT_CUT = bDotCut;
-				}
-
-				//hashKeyToData[svid.sId] = svid;
-				if (hashLocalToSvid.ContainsKey(svid.sLOCAL))
-				{
-					hashLocalToSvid[svid.sLOCAL].Add(svid);
-				}
-				else
-				{
-					hashLocalToSvid.Add(svid.sLOCAL, new List<clSVID>() { svid });
-				}
-			}
-
-			return hashLocalToSvid;
-		}
-		/// <summary>
-		/// 
-		/// </summary>
-		private string CreateFilePath(string sConfigPath, string sFileName)
-		{
-			DateTime time = DateTime.Now;
-			string sDate = string.Format(@"_{0:d4}{1:d2}{2:d2}", time.Year, time.Month, time.Day);
-
-			string sXFilePath = string.Format("{0}\\{1}{2}.xml", sConfigPath, sFileName, sDate);
-			int iBackup = 1;
-
-			while (File.Exists(sXFilePath))
-			{
-				sXFilePath = string.Format("{0}\\{1}{2}_({3}).xml", sConfigPath, sFileName, sDate, iBackup++.ToString());
-			}
-
-			return sXFilePath;
 		}
 		/// <summary>
 		/// 
@@ -540,25 +550,11 @@ namespace ConfigEditor
 
 			foreach (var svid in SvidManager.hashSvidKeyToData)
 			{
-				StringBuilder sb = new StringBuilder();
-				string sKey = svid.Key.ToString();
-				string sName = svid.Value.sPLC_NAME;
-				string sFormat = svid.Value.sFORMAT;
-				string sType = svid.Value.sTYPE;
-				string sUnit = svid.Value.sUNIT;
-				string sRange = svid.Value.sRANGE;
-				string sDot = svid.Value.sDOT;
-				string sSigned = svid.Value.sSIGNED;
-				string sLocal = svid.Value.sLOCAL;
-
-				sb.Append(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t", sKey, sName, sFormat, sType, sUnit, sRange, sDot, sSigned, sLocal));
-				m_spreadUtility.SetClipValue(iSheetIndex++, 0, SvidManager.hashSvidKeyToData.Count, 9, sb.ToString());
-
 				listFDC.Add(new string[] { svid.Key.ToString(), svid.Value.sPLC_NAME, svid.Value.sFORMAT, svid.Value.sTYPE, svid.Value.sUNIT, svid.Value.sRANGE,
 					svid.Value.sDOT, svid.Value.sSIGNED, svid.Value.sLOCAL});
-				//m_spreadUtility.SetClipValue(0, 0, listFDC);
-
 			}
+
+			m_spreadUtility.SetClipValue(0, 0, listFDC);
 		}
 		#endregion
 
@@ -575,5 +571,26 @@ namespace ConfigEditor
 		}
 		#endregion
 
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnOpenFolder(object sender, MouseButtonEventArgs e)
+		{
+			try
+			{
+				string sPath = m_lbPath.Content.ToString();
+
+				if (Directory.Exists(sPath))
+				{
+					Process.Start(sPath);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Process.Start(@"D:\");
+			}
+
+		}
 	}
 }

@@ -178,6 +178,16 @@ namespace Kornic.BlockControlFoundation
 		/// <summary>
 		/// 
 		/// </summary>
+		public string sUtilityPath
+		{
+			get
+			{
+				return m_sUtilityPath;
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
 		public string sProject
 		{
 			get

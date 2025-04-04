@@ -31,14 +31,14 @@
                 <Separator />
                 <!--<Button Content="Run NotePad"		Margin="10,0,10,0"	Click="OnNotePadClick"		ToolTip="Save List Config"  />-->
             </ToolBar>
-            <Label x:Name="m_lbProject" Content="Project"    Width="120" Margin="471,0,629,0" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14"></Label>
-            <Label x:Name="m_lbPath" Content="Path"       Width="360" Margin="648,0,452,0" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14"></Label>
+            <Label x:Name="m_lbProject" Content="Project"     Padding="3" Margin="471,3,624,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1"       ></Label>
+            <Label x:Name="m_lbPath" Content="Path"           Padding="3" Margin="648,3,189,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1"   MouseDoubleClick="OnOpenFolder"></Label>
         </Grid>
         <Grid Grid.Row="1">
             <SHEET:APSSheet  x:Name="m_spreadUtility" ColumnCount="10" SpreadZoomUse="False" SpreadVerScollUse="True" SpreadScrollUse="True" SpreadHorScrollUse="True" _Header="GRAY" _Style="CIM_GRAY" 
 							 ColumnHeader_0="SVID" ColumnHeader_1="Name" ColumnHeader_2="Format" ColumnHeader_3="Type" ColumnHeader_4="Unit" ColumnHeader_5="Range" ColumnHeader_6="Dot" ColumnHeader_7="Signed" ColumnHeader_8="Local" ColumnHeader_9="Button" 
 							 ColumnWidth_1="280" ColumnWidth_5="140" SelectionMode="Cell"
-							 Margin="10"
+							 Margin="10" Grid.ColumnSpan="2"
                              />
         </Grid>
 
