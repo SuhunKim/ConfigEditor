@@ -163,7 +163,25 @@ namespace ConfigEditor
 
 
 				m_spreadUtility.Initialize(hashSheet);
-				//m_spreadUtility.RowCount = 0;
+				
+				
+				m_spreadUtility.SetRowsHeight(0, m_spreadUtility.RowCount, 25);
+				
+				CrossThread.SheetColCountCrossThread(m_spreadUtility, 10);
+
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 0, eSVID.key.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 1, eSVID.plcChannelName.ToString(), 360);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 2, eSVID.format.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 3, eSVID.type.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 4, eSVID.unit.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 5, eSVID.range.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 6, eSVID.dot.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 7, eSVID.signed.ToString(), 80);
+				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 8, eSVID.local.ToString(), 80);
+				//CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 9, "Up", 80);
+				//CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 10, "Down", 80);
+				m_spreadUtility.ScrollCurrentWorksheet(0, 0);
+
 
 				return true;
 			}
@@ -532,6 +550,17 @@ namespace ConfigEditor
 		/// <summary>
 		/// 
 		/// </summary>
+		private void OnBtnMoveClick(object sender, RoutedEventArgs e)
+		{
+			//string sDir = sender.ToString;
+			int iRow = m_spreadUtility.CurrentWorksheet.FocusPos.Row;
+
+
+
+		}
+		/// <summary>
+		/// 
+		/// </summary>
 		private void OnNotePadClick(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(m_configurator.sConfigPath))
@@ -614,5 +643,6 @@ namespace ConfigEditor
 			}
 
 		}
+
 	}
 }
