@@ -163,10 +163,10 @@ namespace ConfigEditor
 
 
 				m_spreadUtility.Initialize(hashSheet);
-				
-				
+
+
 				m_spreadUtility.SetRowsHeight(0, m_spreadUtility.RowCount, 25);
-				
+
 				CrossThread.SheetColCountCrossThread(m_spreadUtility, 10);
 
 				CrossThread.SheetColHeaderCrossThread(m_spreadUtility, 0, eSVID.key.ToString(), 80);
@@ -267,20 +267,42 @@ namespace ConfigEditor
 			{
 			}
 
+			List<XmlNode> listNode = new List<XmlNode>();
 			foreach (XmlNode Node in itemNodes)
 			{
-				string snodeName = Node.Attributes.GetNamedItem("id").Value.ToString();
+				if (Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value.Contains(sStructId))
+				{
+					listNode.Add(Node);
+				}
+			}
+
+			//foreach (XmlNode Node in itemNodes)
+			foreach (XmlNode Node in listNode)
+			{
+				string snodeName = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value.ToString();
 
 				if (snodeName.Contains(sStructId))
 				{
-					string sLocal = snodeName.Substring(snodeName.IndexOf("L") + 1, 2); //수정 필요 더  범용적인 방법
+					string sLocal = snodeName.Substring(snodeName.IndexOf("L") + 1, 2); //수정 필요 GetLocalNo
 
-					//	FDC_STRUCT / FDC_SEM_STRUCT 구분방법 적용해야함 
 					XmlAttribute idAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_1);
-					idAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value;    //"FDC".ToString();
+					idAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_1).Value;
 
 					XmlAttribute typeAttributeStruct = doc.CreateAttribute(DEF_PLC_STRUCT_ATTR_2);
 					typeAttributeStruct.Value = Node.Attributes.GetNamedItem(DEF_PLC_STRUCT_ATTR_2).Value;
+
+					//Fdc_Struct Item > 490 -> Separate Struct
+					bool bAddStruct = false;
+					if (Node.ChildNodes.Count > 490)
+					{
+
+						bAddStruct = true;
+						int iHex = Convert.ToInt32(typeAttributeStruct.Value.ToString(), 16);
+						string sHex = string.Format("0x{0}", (iHex + 960).ToString("X").PadLeft(4, '0'));
+
+						//XmlAttribute idAttributeStructAdd = idAttributeStruct.Value.Clone();
+						//XmlAttribute typeAttributeStructAdd = typeAttributeStruct.Value.Clone();
+					}
 
 					var temp = Node.ChildNodes;
 					Node.RemoveAll();
@@ -288,10 +310,12 @@ namespace ConfigEditor
 					Node.Attributes.Append(idAttributeStruct);
 					Node.Attributes.Append(typeAttributeStruct);
 
-
-					//250404 shkim 수정 예정 값 넣는 방식 주소까진 복사됨
 					foreach (var item in hashData[sLocal])
 					{
+						//if (hashData[sLocal].Count > 500)
+						//{
+						//	//Struct를 둘로 쪼개기 필요성 확인.
+						//}
 						XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
 
 						XmlAttribute idAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_1);
@@ -304,20 +328,6 @@ namespace ConfigEditor
 
 						Node.AppendChild(newChild);
 					}
-					//for (int i = 0; i < 10; i++)
-					//{
-					//	XmlElement newChild = doc.CreateElement(DEF_PLC_ITEM);
-
-					//	XmlAttribute idAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_1);
-					//	idAttribute.Value = i.ToString();
-					//	newChild.Attributes.Append(idAttribute);
-
-					//	XmlAttribute typeAttribute = doc.CreateAttribute(DEF_PLC_ITEM_ATTR_2);
-					//	typeAttribute.Value = "I4";
-					//	newChild.Attributes.Append(typeAttribute);
-
-					//	Node.AppendChild(newChild);
-					//}
 				}
 			}
 			doc.Save(sDataCopyPath);
@@ -391,6 +401,16 @@ namespace ConfigEditor
 		#endregion
 
 		#region Class event handler
+		/// <summary>
+		/// 
+		/// </summary>
+		private void OnCreateClick(object sender, RoutedEventArgs e)
+		{
+			CommonSaveFileDialog Dialog = new CommonSaveFileDialog();
+
+
+
+		}
 		private void OnSelectClick(object sender, RoutedEventArgs e)
 		{
 			try
@@ -522,7 +542,7 @@ namespace ConfigEditor
 				return;
 			}
 
-			m_spreadUtility.RowCount += 1;
+			CrossThread.SheetRowCountCrossThread(m_spreadUtility, m_spreadUtility.RowCount + 1);
 			//CrossThread.SheetRowCountCrossThread(m_spreadUtility, m_spreadUtility.RowCount + 1);
 		}
 		/// <summary>
@@ -537,6 +557,7 @@ namespace ConfigEditor
 
 			int iRow = m_spreadUtility.CurrentWorksheet.FocusPos.Row;
 			m_spreadUtility.CurrentWorksheet.InsertRows(iRow, 1);
+			CrossThread.SheetRowCountCrossThread(m_spreadUtility, m_spreadUtility.RowCount + 1);
 
 		}
 		/// <summary>
@@ -546,6 +567,7 @@ namespace ConfigEditor
 		{
 			int iRow = m_spreadUtility.CurrentWorksheet.FocusPos.Row;
 			m_spreadUtility.CurrentWorksheet.DeleteRows(iRow, 1);
+			CrossThread.SheetRowCountCrossThread(m_spreadUtility, m_spreadUtility.RowCount - 1);
 		}
 		/// <summary>
 		/// 
@@ -630,6 +652,7 @@ namespace ConfigEditor
 			try
 			{
 				string sPath = m_lbPath.Content.ToString();
+				sPath = sPath.Replace(sPath.Split('\\').Last(), "");
 
 				if (Directory.Exists(sPath))
 				{
@@ -643,6 +666,5 @@ namespace ConfigEditor
 			}
 
 		}
-
 	}
 }

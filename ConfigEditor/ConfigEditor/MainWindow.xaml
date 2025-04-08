@@ -18,6 +18,8 @@
 
         <Grid Grid.Row="0" KeyDown="OnKeyDown">
             <ToolBar   MouseDown="UIWindowMouseDown"  ClipToBounds="False" Margin="10,5,5,5" Padding="0" Width="400" HorizontalAlignment="Left">
+                <Button x:Name="m_btnCreate" Content="Create"	Margin="10,0,10,0"	Click="OnCreateClick"	ToolTip="Select Project Config" />
+                <Separator />
                 <Button x:Name="m_btnSelect" Content="Select"	Margin="10,0,10,0"	Click="OnSelectClick"	ToolTip="Select Project Config" />
                 <Separator />
                 <Menu x:Name="m_menuEdit" Background="Transparent" >
@@ -36,11 +38,19 @@
                 <Separator />
                 <!--<Button Content="Run NotePad"		Margin="10,0,10,0"	Click="OnNotePadClick"		ToolTip="Save List Config"  />-->
             </ToolBar>
-            <Label x:Name="m_lbProject" Content="Project"     Padding="3" Margin="471,3,624,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1"       ></Label>
-            <Label x:Name="m_lbPath" Content="Path"           Padding="3" Margin="648,3,189,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1"   MouseDoubleClick="OnOpenFolder"></Label>
+            <Label x:Name="m_lbProject" Content="Project"     Padding="3" Margin="471,3,624,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1"       >
+            </Label>
+            
+            <Label x:Name="m_lbPath" Content="Path"           Padding="3" Margin="648,3,189,3" Foreground="#FFB6B6B6" FontWeight="Bold" FontSize="14" BorderBrush="#FFB6B6B6" BorderThickness="1" 
+                   MouseDoubleClick="OnOpenFolder" >
+                <Label.ToolTip>
+                    <ToolTip Content="{Binding Content, ElementName=m_lbProject}" />
+                </Label.ToolTip>
+            </Label>
+ 
         </Grid>
         <Grid Grid.Row="1">
-            <DockPanel>
+            <DockPanel Grid.ColumnSpan="2">
 
                 <SHEET:APSSheet  x:Name="m_spreadUtility" _Header="WHITE" _Style="CIM_WHITE" SpreadZoomUse="False" SpreadVerScollUse="True" SpreadScrollUse="True" SpreadHorScrollUse="False"  
                              SelectionMode="Range"   Margin="10" SpreadReadOnly="False" VerBorderLinelUse="True" MinRowHeight="30" ColumnCount="10" SheetTabVisible="False"  >
